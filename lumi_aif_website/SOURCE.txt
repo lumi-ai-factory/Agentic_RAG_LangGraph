@@ -1,0 +1,10 @@
+A snapshot of the LUMI AI Factory website, used as the example corpus in 01_RAG_Basics.ipynb.
+
+Source:     https://lumi-ai-factory.eu/  (pages and service pages, via the site's WordPress API)
+Downloaded: 2026-11-23
+Copyright:  © 2026 LUMI AI Factory
+
+Each file is one web page converted to markdown. Its first lines give the page title and its
+address. Contact forms, scripts and purely administrative pages (privacy, accessibility, news
+listings, etc.) were left out. The live website is the authoritative version; this copy is not
+updated automatically.

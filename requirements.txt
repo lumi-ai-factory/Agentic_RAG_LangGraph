@@ -1,26 +1,17 @@
-# ── PyTorch, CPU-only ─────────────────────────────────────────────────────────
-# sentence-transformers pulls in torch, and PyPI's default Linux/Windows wheel
-# bundles CUDA — around 16 extra nvidia-* packages and several GB you will never
-# use, since everything here runs on CPU. Pinning the "+cpu" build avoids that.
-# macOS wheels are CPU-only already and carry no "+cpu" tag, hence the split.
---extra-index-url https://download.pytorch.org/whl/cpu
-torch==2.13.0+cpu ; sys_platform != "darwin"
-torch==2.13.0 ; sys_platform == "darwin"
+# Everything heavy (the language model and the embedding model) runs on a remote,
+# OpenAI-compatible API, so nothing here needs a GPU or downloads model weights.
 
 # ── Graph and LLM ─────────────────────────────────────────────────────────────
 # LangChain and LangGraph are 1.x. Tutorials written against 0.x will not apply.
 langgraph>=1.2,<2
 langchain-core>=1.5,<2
-langchain-openai>=1.4,<2
+langchain-openai>=1.4,<2          # chat model and embeddings, any OpenAI-compatible API
 pydantic>=2.13,<3
 
 # ── Retrieval ─────────────────────────────────────────────────────────────────
-langchain-qdrant>=1.1,<2          # dense + sparse hybrid search
-langchain-huggingface>=1.2,<2     # dense embeddings (Qwen3-Embedding-0.6B)
+langchain-qdrant>=1.1,<2          # vector store wrapper
 langchain-text-splitters>=1.1,<2  # markdown header + recursive chunking
-qdrant-client>=1.18
-fastembed>=0.8                    # sparse BM25 vectors
-sentence-transformers>=5.6
+qdrant-client>=1.18               # local, file-based vector database
 
 # ── Notebook plumbing ─────────────────────────────────────────────────────────
 python-dotenv>=1.2
@@ -29,8 +20,5 @@ ipykernel>=7.0
 ipython>=8.0
 
 # ── Chat UI and tracing ───────────────────────────────────────────────────────
-gradio>=6.0
+gradio>=6.0                       # chat UI (currently disabled in the notebook)
 langfuse>=4.14                    # optional; inert unless LANGFUSE_ENABLED=true
-
-# ── Only for PDF_to_Markdown.ipynb ────────────────────────────────────────────
-pymupdf4llm>=1.28
