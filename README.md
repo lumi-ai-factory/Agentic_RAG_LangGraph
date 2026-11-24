@@ -1,46 +1,21 @@
 # Agentic RAG with LangGraph
 
-A worked example of **agentic RAG** from the LUMI AI Factory.
+Hands-on examples of **agentic RAG** from the LUMI AI Factory.
 
-Ordinary RAG is a fixed pipeline: embed the question, fetch the top few chunks, paste them into
-the prompt, answer. It works until the question is vague, or spans two topics, or the first
-search simply misses. Agentic RAG replaces that straight line with a loop the model controls —
-it decides whether to search, what to search for, whether the result was good enough, and when
-to search again with different words. This repository builds one, from the simplest thing that
-works up to a full [LangGraph](https://langchain-ai.github.io/langgraph/) implementation.
+Standard RAG runs as a static pipeline: embed a query, fetch the top chunks, and pass them to the model. That works for straightforward lookups, but breaks down when a question is ambiguous, covers multiple topics, or misses on the first search. Agentic RAG puts the LLM in **a loop** instead, letting it decide when to search, what queries to run, and whether to try again with different terms before answering.
 
-Both notebooks use material no language model has read during training, so you can see plainly
-when an answer came from retrieval and when it was invented.
+New to RAG? The [RAG chapter](https://lumi-ai-factory.github.io/The-Pragmatic-Guide-to-LLMs/8-rag) of *The Pragmatic Guide to LLMs* gives a short introduction.
 
-## The notebooks
+## Notebooks
 
-| Notebook | What it covers |
+| Notebook | Description |
 | --- | --- |
-| `01_RAG_Basics.ipynb` | Start here. Ask a model about LUMI AI Factory with and without RAG, then let it search for itself. A handful of short cells, no prior knowledge needed. Uses the saved copy of the LUMI AI Factory website in `lumi_aif_website/`. |
-| `02_agentic_rag.ipynb` | The advanced version: rolling conversation memory, query rewriting, human-in-the-loop clarification, parallel sub-agents, and context compression. Downloads the latest [LUMI documentation](https://docs.lumi-supercomputer.eu/) on every run and rebuilds its index only when the documentation has changed. |
+| `01_RAG_Basics.ipynb` | Introductory notebook requiring no prior knowledge. Queries a model about LUMI AI Factory with and without RAG, then adds basic agentic search. Uses the local copy of the LUMI AI Factory website in `lumi_aif_website/`. |
+| `02_agentic_rag.ipynb` | Full LangGraph implementation with rolling conversation memory, query rewriting, human-in-the-loop clarification, parallel sub-agents, and context compression. Downloads the latest [LUMI documentation](https://docs.lumi-supercomputer.eu/) on each run and only rebuilds the index when the docs have changed. |
 
-Answers link to the pages they are based on.
+## Setup
 
-Have PDFs rather than markdown? The upstream project has a
-[PDF-to-markdown notebook](https://github.com/GiovanniPasq/agentic-rag-for-dummies/blob/main/notebooks/pdf_to_markdown.ipynb).
-
-## The theory lives elsewhere
-
-This repository is deliberately code-only. If you want to understand *why* any of it is shaped
-the way it is, read these first — they are written for the same audience:
-
-- **[Retrieval-Augmented Generation](https://arbruiser.github.io/The-Pragmatic-Guide-to-LLMs/8-rag)** —
-  the indexing–retrieval–generation pipeline, chunking, hybrid search, reranking, and how to
-  evaluate the result.
-- **[Agentic RAG](https://arbruiser.github.io/The-Pragmatic-Guide-to-LLMs/9-agentic-rag)** —
-  where the fixed pipeline breaks down, what an agent adds, and why a graph rather than a loop.
-
-Both are chapters of [The Pragmatic Guide to LLMs](https://arbruiser.github.io/The-Pragmatic-Guide-to-LLMs/).
-
-## Getting started
-
-The language model and the embedding model are called over an API; the vector database runs
-inside the notebook. A laptop with Python 3.11+ and `git` is enough — no GPU, no model downloads.
+You need Python 3.11+ and `git`; the commands below install everything else. No GPU or model downloads required.
 
 ```bash
 git clone https://github.com/lumi-ai-factory/Agentic_RAG_LangGraph.git
@@ -52,53 +27,32 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Put your API key in `.env`, then open a notebook:
+Add your [Aitta](https://aitta.csc.fi/public) API key to `.env`. That's the only change needed to run both notebooks. Then open `01_RAG_Basics.ipynb`:
 
-- **VS Code** (with the Python and Jupyter extensions): open `01_RAG_Basics.ipynb`, click
-  **Select Kernel** in the top right → **Python Environments…** → `.venv`.
-- **In the browser:** with the virtual environment active, run `pip install jupyterlab` and then
-  `jupyter lab`.
+- **VS Code** (with the Python and Jupyter extensions): click **Select Kernel** in the top right -> **Python Environments...** -> `.venv`.
+- **JupyterLab**: with `.venv` active, run `pip install jupyterlab && jupyter lab`.
 
-Run the cells from top to bottom with **Shift + Enter**.
+Support for running these notebooks on [Noppe](https://noppe.csc.fi) (CSC's browser-based Jupyter platform) is planned; instructions will be added here when ready.
 
-If you would rather not install anything locally, the notebooks are meant to also run on
-**[Noppe](https://noppe.csc.fi)**, CSC's browser-based Jupyter platform. Instructions will follow.
+### Model configuration
+Both the LLM and embedding model are called over an API. The default provider is [Aitta](https://aitta.csc.fi/public) (inference service by LUMI AI Factory at CSC). Only the vector database runs locally in the notebook.
 
-### Choosing a language model
-
-The notebooks default to [Aitta](https://aitta.csc.fi/public), CSC's inference service, because
-it is what Finnish and European users are most likely to already have access to. Put your key in
-`.env` as `AITTA_API_KEY` and you are done.
-
-Nothing in the code is tied to it, though. Both models are created through LangChain's
-OpenAI-compatible clients, so switching providers means changing the settings at the top of
-the notebook — the service address, the API key, and the model names:
+Both the LLM and the embedding model use LangChain's OpenAI-compatible clients, so you can switch to OpenAI, a local [Ollama](https://ollama.com) or [vLLM](https://docs.vllm.ai/) server, or another hosted gateway by editing the settings at the top of notebook 2:
 
 ```python
-BASE_URL = "https://aitta-api.csc.fi/openai/v1"   # ← any OpenAI-compatible endpoint
+BASE_URL = "https://aitta-api.csc.fi/openai/v1"
 API_KEY = os.environ["AITTA_API_KEY"]
 LLM_MODEL = "google/gemma-4-26B-A4B-it"
 EMBEDDING_MODEL = "intfloat/multilingual-e5-large"
 ```
 
-That covers a local [Ollama](https://ollama.com) or [vLLM](https://docs.vllm.ai/) server, OpenAI
-itself, and most hosted gateways. For providers that are *not* OpenAI-compatible — Anthropic and
-Google Gemini, say — the upstream project this is based on has
-[ready-made configuration for each](https://github.com/GiovanniPasq/agentic-rag-for-dummies#llm-provider-configuration).
-
-Whatever you pick needs **tool calling**; without it the agent cannot search.
+The model you choose must support **tool calling** so the agent can invoke search. For providers that are not OpenAI-compatible (such as Anthropic or Google Gemini), see the [LLM provider configuration](https://github.com/GiovanniPasq/agentic-rag-for-dummies#llm-provider-configuration) in the upstream repo.
 
 ## Credits
 
-This project is adapted from
-**[agentic-rag-for-dummies](https://github.com/GiovanniPasq/agentic-rag-for-dummies)** by
-Giovanni Pasqualino — copyright © 2025, MIT licensed. That is where the parent/child retrieval
-design and the overall graph architecture come from. It is a genuinely good piece of teaching
-material and well worth reading in its own right; it also ships the same ideas as a structured
-Python package under `project/`, if you would rather have that than a notebook.
+Adapted from [agentic-rag-for-dummies](https://github.com/GiovanniPasq/agentic-rag-for-dummies)
+by Giovanni Pasqualino (© 2025, MIT License), which provides the parent/child retrieval design and LangGraph architecture.
 
-The adaptation here swaps in the LUMI documentation, targets CSC's Aitta inference service by
-default, and rewrites the material to sit alongside the guide linked above.
+This adaptation swaps in the LUMI documentation, defaults to CSC's Aitta service, and aligns the notebooks with *[The Pragmatic Guide to LLMs](https://lumi-ai-factory.github.io/The-Pragmatic-Guide-to-LLMs/)*.
 
-The pages in `lumi_aif_website/` are a snapshot of [lumi-ai-factory.eu](https://lumi-ai-factory.eu/),
-© 2026 LUMI AI Factory; see `lumi_aif_website/SOURCE.txt`.
+The pages in `lumi_aif_website/` are a snapshot of [lumi-ai-factory.eu](https://lumi-ai-factory.eu/) (© 2026 LUMI AI Factory; see `lumi_aif_website/SOURCE.txt`).
