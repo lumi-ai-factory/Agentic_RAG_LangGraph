@@ -19,6 +19,9 @@ tiktoken>=0.13                    # token budgeting in the agent loop
 ipykernel>=7.0
 ipython>=8.0
 
+# ── Your own documents (notebook 1, section 5) ───────────────────────────────
+pymupdf4llm>=2.2                  # PDF → markdown; AGPL-3.0, see the note in the notebook
+
 # ── Chat UI and tracing ───────────────────────────────────────────────────────
 gradio>=6.0                       # chat UI (currently disabled in the notebook)
 langfuse>=4.14                    # optional; inert unless LANGFUSE_ENABLED=true

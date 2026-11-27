@@ -5,12 +5,14 @@
 corpus/
 parent_store/
 qdrant_db/
-.lumi-docs/
-markdown_docs/
-pdfs/
+
+# The reader's own documents (notebook 1, section 5): keep the empty folder, never commit the files
+own_docs/*
+!own_docs/.gitkeep
 
 # Scratch
 test_notebook.ipynb
+01_RAG_Basics_TESTER.ipynb
 
 # Agent instructions (local only)
 CLAUDE.md

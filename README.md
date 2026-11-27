@@ -10,12 +10,14 @@ New to RAG? The [RAG chapter](https://lumi-ai-factory.github.io/The-Pragmatic-Gu
 
 | Notebook | Description |
 | --- | --- |
-| `01_RAG_Basics.ipynb` | Introductory notebook requiring no prior knowledge. Queries a model about LUMI AI Factory with and without RAG, then adds basic agentic search. Uses the local copy of the LUMI AI Factory website in `lumi_aif_website/`. |
+| `01_RAG_Basics.ipynb` | Introductory notebook requiring no prior knowledge. Queries a model about LUMI AI Factory with and without RAG, then adds basic agentic search and compares it with putting the whole website in the prompt. Uses the local copy of the LUMI AI Factory website in `lumi_aif_website/`. Ends with a section for trying the agent on your own markdown files or PDFs (put them in `own_docs/`). |
 | `02_agentic_rag.ipynb` | Full LangGraph implementation with rolling conversation memory, query rewriting, human-in-the-loop clarification, parallel sub-agents, and context compression. Downloads the latest [LUMI documentation](https://docs.lumi-supercomputer.eu/) on each run and only rebuilds the index when the docs have changed. |
 
 ## Setup
 
-You need Python 3.11+ and `git`; the commands below install everything else. No GPU or model downloads required.
+You need [Python 3.11+](https://www.python.org/downloads/) and `git`; the commands below install everything else. No GPU or model downloads required.
+
+**macOS / Linux:** check for git with `git --version`. On macOS this offers to install it if it is missing; on Linux use your package manager (for example `sudo apt install git` on Ubuntu/Debian, `sudo dnf install git` on Fedora).
 
 ```bash
 git clone https://github.com/lumi-ai-factory/Agentic_RAG_LangGraph.git
@@ -26,6 +28,22 @@ pip install -r requirements.txt
 
 cp .env.example .env
 ```
+
+**Windows (PowerShell):** install git with `winget install --id Git.Git -e` (if it is already installed, winget says so), then open a new PowerShell window.
+
+```powershell
+git clone https://github.com/lumi-ai-factory/Agentic_RAG_LangGraph.git
+cd Agentic_RAG_LangGraph
+
+py -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+
+copy .env.example .env
+```
+
+If PowerShell refuses to run `Activate.ps1` ("running scripts is disabled"), run
+`Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once and try again.
 
 Add your [Aitta](https://aitta.csc.fi/public) API key to `.env`. That's the only change needed to run both notebooks. Then open `01_RAG_Basics.ipynb`:
 
